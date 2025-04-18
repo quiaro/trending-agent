@@ -5,6 +5,7 @@ import operator
 import json
 import sys
 from openai import OpenAI
+from dotenv import load_dotenv, find_dotenv
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, FunctionMessage
@@ -15,11 +16,18 @@ class AgentState(TypedDict):
     """State for the agent."""
     messages: List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]]
 
+# Load environment variables
+dotenv_path = find_dotenv(usecwd=True)
+if not dotenv_path:
+    print("Error: .env file not found in the current directory or parent directories.")
+    sys.exit(1)
+
+load_dotenv(dotenv_path)
+
 # Create the OpenAI client with API key from environment variables
 api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     print("Error: OPENAI_API_KEY environment variable not set.")
-    print("Please create a .env file in the backend directory with your OpenAI API key.")
     sys.exit(1)
 
 client = OpenAI(api_key=api_key)
