@@ -99,16 +99,15 @@ def agent(state: AgentState) -> Dict:
     message = response.choices[0].message
     
     # Convert to LangChain message format
-    if message.tool_calls:
+    if hasattr(message, "tool_calls") and message.tool_calls:
         tool_call = message.tool_calls[0]
         ai_message = AIMessage(
             content=message.content or "",
-            additional_kwargs={
-                "function_call": {
-                    "name": tool_call.function.name,
-                    "arguments": tool_call.function.arguments
-                }
-            }
+            tool_calls=[{
+                "name": tool_call.function.name,
+                "args": json.loads(tool_call.function.arguments),
+                "id": tool_call.id
+            }]
         )
     else:
         ai_message = AIMessage(content=message.content or "")
@@ -132,10 +131,11 @@ def should_continue(state: AgentState) -> str:
     messages = state["messages"]
     last_message = messages[-1]
     
-    # Check if the last message is a function call
+    # Check if the last message is a tool call
     if (
         isinstance(last_message, AIMessage) and 
-        "function_call" in last_message.additional_kwargs
+        hasattr(last_message, "tool_calls") and 
+        last_message.tool_calls
     ):
         return "tool_selector"
     
@@ -158,14 +158,15 @@ def tool_selector(state: AgentState) -> Dict:
     messages = state["messages"]
     last_message = messages[-1]
     
-    # Extract function call details
+    # Extract tool call details
     if (
         isinstance(last_message, AIMessage) and 
-        "function_call" in last_message.additional_kwargs
+        hasattr(last_message, "tool_calls") and 
+        last_message.tool_calls
     ):
-        function_call = last_message.additional_kwargs["function_call"]
-        function_name = function_call["name"]
-        arguments = json.loads(function_call["arguments"])
+        tool_call = last_message.tool_calls[0]
+        function_name = tool_call["name"]
+        arguments = tool_call["args"]
         
         # Execute the specified tool
         result = None
@@ -178,7 +179,8 @@ def tool_selector(state: AgentState) -> Dict:
             # Add function message with result
             function_message = FunctionMessage(
                 content=result,
-                name=function_name
+                name=function_name,
+                tool_call_id=tool_call.get("id", "")
             )
             return {"messages": messages + [function_message]}
     

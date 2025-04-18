@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import asyncio
 from contextlib import asynccontextmanager
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from app.graph import graph, AgentState
 
 app = FastAPI(title="Trending Information API")
@@ -59,8 +59,8 @@ async def stream_agent_response(category: str):
                 new_message = event["messages"][-1]
                 state = event  # Update state
                 
-                # If it's an assistant message, yield the content
-                if hasattr(new_message, "content") and new_message.content:
+                # If it's an assistant message with content, yield the content
+                if isinstance(new_message, AIMessage) and hasattr(new_message, "content") and new_message.content:
                     yield f"data: {new_message.content}\n\n"
                     await asyncio.sleep(0.1)  # Small delay for smooth streaming
 
