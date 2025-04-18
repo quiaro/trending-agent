@@ -74,54 +74,7 @@ def should_continue(state: AgentState) -> str:
     return END
 
 # Create the tool selector node
-tool_node = ToolNode(tools=[google_trends, google_search, reddit_search])
-
-# Define the tool selector node function
-def tool_selector(state: AgentState) -> Dict:
-    """
-    Select and execute the appropriate tool based on the agent's request.
-    
-    Args:
-        state: Current state with messages
-        
-    Returns:
-        Updated state with tool execution results
-    """
-    messages = state["messages"]
-    last_message = messages[-1]
-    
-    # Extract tool call details
-    if (
-        isinstance(last_message, AIMessage) and 
-        hasattr(last_message, "tool_calls") and 
-        last_message.tool_calls
-    ):
-        tool_call = last_message.tool_calls[0]
-        function_name = tool_call["name"]
-        arguments = tool_call["args"]
-        
-        # Execute the specified tool
-        result = None
-        for tool in tools:
-            tool_name = tool.name if isinstance(tool, BaseTool) else tool.__name__
-            if tool_name == function_name:
-                # Use tool.invoke() instead of tool(**arguments) for BaseTool instances
-                if isinstance(tool, BaseTool):
-                    result = tool.invoke(arguments)
-                else:
-                    result = tool(**arguments)
-                break
-        
-        if result:
-            # Add function message with result
-            function_message = FunctionMessage(
-                content=result,
-                name=function_name,
-                tool_call_id=tool_call.get("id", "")
-            )
-            return {"messages": messages + [function_message]}
-    
-    return {"messages": messages}
+tool_selector = ToolNode(tools=[google_trends, google_search, reddit_search])
 
 # Build the graph
 def build_graph() -> StateGraph:
