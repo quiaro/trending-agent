@@ -17,11 +17,11 @@ def google_trends(query: str) -> str:
     # In a real application, this would use the Google Trends API
     # For this example, we'll simulate the response
     return f"Current top trending topics on Google for {query}:\n" + \
-           f"1. {query.title()} Latest Developments\n" + \
-           f"2. New Innovations in {query.title()}\n" + \
-           f"3. {query.title()} Market Updates\n" + \
-           f"4. {query.title()} Industry Leaders\n" + \
-           f"5. Breaking News in {query.title()}"
+           f"1. {query} Latest Developments\n" + \
+           f"2. New Innovations in {query}\n" + \
+           f"3. {query} Market Updates\n" + \
+           f"4. {query} Industry Leaders\n" + \
+           f"5. Breaking News in {query}"
 
 @tool
 def google_search(query: str) -> str:
