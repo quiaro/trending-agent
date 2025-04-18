@@ -4,7 +4,7 @@ from typing import Dict, List, TypedDict, Annotated, Sequence, Union, cast
 import operator
 import json
 import sys
-from openai import OpenAI
+from openai import ChatOpenAI
 from dotenv import load_dotenv, find_dotenv
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
@@ -13,9 +13,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Func
 from langchain_core.tools import BaseTool
 from app.tools import google_trends, google_search, reddit_search
 
-# Define the state schema
-class AgentState(TypedDict):
-    messages: Annotated[List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]], add_messages]
+model = ChatOpenAI(model="gpt-4o", temperature=0)
 
 # Define the available tools
 tools = [google_trends, google_search, reddit_search]
@@ -27,80 +25,29 @@ system_message = SystemMessage(
     specific topic. Use these tools to provide comprehensive answers."""
 )
 
+
+# Define the state schema
+class AgentState(TypedDict):
+    messages: Annotated[List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]], add_messages]
+
+
 # Define the agent node
 def agent(state: AgentState) -> Dict:
     """
-    Agent node that processes messages and decides next steps.
+    Agent node that processes messages stored in the state.
     
     Args:
-        state: The current state with messages
+        state: The current graph state
         
     Returns:
-        Updated state with new messages and potential next node
+        Updated state with new messages returned from the tool selector node
     """
     messages = state["messages"]
     
-    # Prepare messages for the model
-    model_messages = []
-    if not any(isinstance(m, SystemMessage) for m in messages):
-        model_messages.append(system_message)
-    
-    model_messages.extend(messages)
-    
-    # Call the OpenAI model
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{
-            "role": "system" if isinstance(m, SystemMessage) else
-                   "user" if isinstance(m, HumanMessage) else
-                   "assistant" if isinstance(m, AIMessage) else
-                   "function", 
-            "content": m.content if not isinstance(m, FunctionMessage) else None,
-            "name": m.name if isinstance(m, FunctionMessage) else None,
-            "function_call": m.additional_kwargs.get("function_call", None) 
-                  if isinstance(m, AIMessage) else None
-        } for m in model_messages if m.content is not None or isinstance(m, FunctionMessage)],
-        tools=[{
-            "type": "function",
-            "function": {
-                "name": tool.name if isinstance(tool, BaseTool) else tool.__name__,
-                "description": tool.description if isinstance(tool, BaseTool) else tool.__doc__,
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "query": {
-                            "type": "string",
-                            "description": "The search query"
-                        }
-                    },
-                    "required": ["query"]
-                }
-            }
-        } for tool in tools],
-        stream=False
-    )
-    
-    # Process the response
-    message = response.choices[0].message
-    
-    # Convert to LangChain message format
-    if hasattr(message, "tool_calls") and message.tool_calls:
-        tool_call = message.tool_calls[0]
-        ai_message = AIMessage(
-            content=message.content or "",
-            tool_calls=[{
-                "name": tool_call.function.name,
-                "args": json.loads(tool_call.function.arguments),
-                "id": tool_call.id
-            }]
-        )
-    else:
-        ai_message = AIMessage(content=message.content or "")
-    
-    # Add to messages
-    new_messages = messages + [ai_message]
-    
-    return {"messages": new_messages}
+    # Call OpenAI chat model
+    response = model.invoke(messages)
+    return {"messages": [response]}
+
 
 # Define a conditional edge to check if we should continue
 def should_continue(state: AgentState) -> str:
