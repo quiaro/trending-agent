@@ -8,7 +8,7 @@ from fastapi.responses import StreamingResponse
 import asyncio
 from contextlib import asynccontextmanager
 from langchain_core.messages import HumanMessage, AIMessage
-from app.graph import build_graph, AgentState
+from app.graph import build_graph, create_agent_state
 from app.utils.setup import setup
 
 # Call setup to initialize environment
@@ -54,7 +54,7 @@ async def stream_agent_response(category: str):
     prompt = f"Find the top trending topic in the United States related to {category} and get the most relevant information related to this topic in Google and Reddit."
     
     # Initialize state
-    state = AgentState(messages=[HumanMessage(content=prompt)])
+    state = create_agent_state(messages=[HumanMessage(content=prompt)])
     
     # Process through the graph
     async for event in graph.astream(state):

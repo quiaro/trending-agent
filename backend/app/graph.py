@@ -31,6 +31,14 @@ class AgentState(TypedDict):
     messages: Annotated[List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]], add_messages]
 
 
+# Factory function to create AgentState with system message
+def create_agent_state(messages: List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]] = None) -> AgentState:
+    all_messages = [system_message]
+    if messages:
+        all_messages.extend(messages)
+    return AgentState(messages=all_messages)
+
+
 # Define the agent node
 def agent(state: AgentState) -> Dict:
     """
