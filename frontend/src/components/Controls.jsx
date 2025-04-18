@@ -15,9 +15,7 @@ function Controls({ categories, onSubmit, loading }) {
 
   return (
     <div className="controls">
-      <h2>What is trending?</h2>
       <div className="control-row">
-        <span className="label">Pick a category:</span>
         <select
           value={selectedCategory}
           onChange={handleCategoryChange}
