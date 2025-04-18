@@ -101,6 +101,17 @@ This application lets users fetch the latest trending information on various cat
 2. Click "Show me trending information"
 3. View the real-time streaming response in the content section
 
+## Troubleshooting
+
+### Common Issues
+
+- **OpenAI API Key Error**: If you see an error about the OpenAI API key, make sure:
+
+  - You have created a `.env` file in the backend directory
+  - The file contains `OPENAI_API_KEY=sk-your-actual-api-key-here` with your real API key
+  - There are no spaces around the equals sign
+  - The API key is valid and has not expired
+
 ## Implementation Details
 
 - The backend implements a LangGraph workflow with multiple tools for fetching trending information
