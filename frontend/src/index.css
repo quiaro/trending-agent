@@ -34,7 +34,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  justify-content: center;
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--color-light);
@@ -87,11 +87,15 @@ select {
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 1024px;
+  margin: 2rem auto;
+  padding: 0 2rem;
   text-align: center;
   background-color: var(--color-light);
+  align-items: flex-start;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header Styles */
@@ -99,12 +103,12 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
-  padding: 1rem;
-  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   background-color: var(--color-dark-accent);
   color: var(--color-light);
   border-radius: 8px 8px 0 0;
+  width: 100%;
 }
 
 .logo {
@@ -134,11 +138,13 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2rem;
   padding: 1.5rem;
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   background-color: var(--color-light-accent);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  width: 100%;
+  z-index: 1;
 }
 
 .controls h2 {
@@ -153,6 +159,8 @@ select {
   margin-top: 1rem;
   width: 100%;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .label {
@@ -179,14 +187,17 @@ select {
 }
 
 .content {
-  padding: 2rem;
-  border-radius: 8px;
+  padding: 3rem 0 2rem;
+  border-radius: 0 0 8px 8px;
   background-color: var(--color-light);
   text-align: left;
   white-space: pre-wrap;
   min-height: 200px;
   border: 1px solid var(--color-light-accent);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: -1rem;
 }
 
 .content-message {
