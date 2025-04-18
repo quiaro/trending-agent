@@ -1,11 +1,8 @@
 """LangGraph implementation for trending information retrieval."""
-import os
 from typing import Dict, List, TypedDict, Annotated, Sequence, Union, cast
 import operator
 import json
-import sys
-from openai import ChatOpenAI
-from dotenv import load_dotenv, find_dotenv
+from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
@@ -13,7 +10,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Func
 from langchain_core.tools import BaseTool
 from app.tools import google_trends, google_search, reddit_search
 
-model = ChatOpenAI(model="gpt-4o", temperature=0)
+model = None
 
 # Define the available tools
 tools = [google_trends, google_search, reddit_search]
@@ -90,6 +87,8 @@ def build_graph() -> StateGraph:
     Returns:
         A configured StateGraph
     """
+    model = ChatOpenAI(model="gpt-4o", temperature=0)
+
     # Create the workflow graph
     workflow = StateGraph(AgentState)
     
