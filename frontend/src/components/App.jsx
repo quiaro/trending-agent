@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Controls from './Controls';
 import Content from './Content';
+import Header from './Header';
 
 function App() {
   const [trendingData, setTrendingData] = useState('');
@@ -58,6 +59,7 @@ function App() {
 
   return (
     <div className="container">
+      <Header />
       <Controls
         categories={categories}
         onSubmit={fetchTrendingData}
