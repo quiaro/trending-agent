@@ -1,0 +1,22 @@
+Project Structure:
+
+/trending-agent
+  /backend
+    /app
+      main.py
+      graph.py
+      tools.py
+    requirements.txt
+    pyproject.toml
+  /frontend
+    /src
+      /components
+        App.jsx
+        Controls.jsx
+        Content.jsx
+      main.jsx
+      index.css
+    index.html
+    package.json
+    vite.config.js
+  README.md 
