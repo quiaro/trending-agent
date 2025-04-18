@@ -5,9 +5,8 @@ import operator
 import json
 from openai import OpenAI
 from langgraph.graph import StateGraph, END
-from langgraph.graph.nodes import Node
 from langgraph.prebuilt import ToolNode
-from langchain.schema import HumanMessage, AIMessage, SystemMessage, FunctionMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, FunctionMessage
 from app.tools import google_trends, google_search, reddit_search
 
 # Define the state schema

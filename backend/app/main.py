@@ -7,7 +7,7 @@ from fastapi.responses import StreamingResponse
 import asyncio
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
-from langchain.schema import HumanMessage
+from langchain_core.messages import HumanMessage
 from app.graph import graph, AgentState
 
 # Load environment variables from .env file

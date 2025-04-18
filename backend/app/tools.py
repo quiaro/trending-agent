@@ -1,7 +1,7 @@
 """Tools for the LangGraph agent to fetch trending information."""
 from typing import Dict, Any, Optional, List
 import httpx
-from langchain.tools import tool
+from langchain_core.tools import tool
 
 @tool
 def google_trends(query: str) -> str:
