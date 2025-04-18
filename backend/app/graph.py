@@ -87,6 +87,7 @@ def build_graph() -> StateGraph:
     Returns:
         A configured StateGraph
     """
+    global model
     model = ChatOpenAI(model="gpt-4o", temperature=0)
 
     # Create the workflow graph
