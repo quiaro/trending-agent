@@ -1,17 +1,24 @@
 """FastAPI server for trending information retrieval."""
 import os
+import sys
 from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import asyncio
 from contextlib import asynccontextmanager
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from langchain_core.messages import HumanMessage
 from app.graph import graph, AgentState
 
 # Load environment variables from .env file
-load_dotenv()
+# Use find_dotenv to locate the .env file
+dotenv_path = find_dotenv(usecwd=True)
+if not dotenv_path:
+    print("Error: .env file not found in the current directory or parent directories.")
+    sys.exit(1)
+
+load_dotenv(dotenv_path)
 
 app = FastAPI(title="Trending Information API")
 

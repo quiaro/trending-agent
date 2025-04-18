@@ -3,6 +3,7 @@ import os
 from typing import Dict, List, TypedDict, Annotated, Sequence, Union, cast
 import operator
 import json
+import sys
 from openai import OpenAI
 from langgraph.graph import StateGraph, END
 from langgraph.prebuilt import ToolNode
@@ -15,7 +16,13 @@ class AgentState(TypedDict):
     messages: List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]]
 
 # Create the OpenAI client with API key from environment variables
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+if not api_key:
+    print("Error: OPENAI_API_KEY environment variable not set.")
+    print("Please create a .env file in the backend directory with your OpenAI API key.")
+    sys.exit(1)
+
+client = OpenAI(api_key=api_key)
 
 # Define the available tools
 tools = [google_trends, google_search, reddit_search]
