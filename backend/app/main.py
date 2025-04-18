@@ -64,7 +64,7 @@ async def stream_agent_response(category: str):
                     yield f"data: {new_message.content}\n\n"
                     await asyncio.sleep(0.1)  # Small delay for smooth streaming
 
-@app.get("/trending/{category}")
+@app.get("/api/trending/{category}")
 async def get_trending(
     category: str = Path(..., description="The category to get trending information for")
 ):
@@ -90,7 +90,7 @@ async def get_trending(
         media_type="text/event-stream"
     )
 
-@app.get("/categories")
+@app.get("/api/categories")
 async def get_categories():
     """
     Get the list of valid categories.
