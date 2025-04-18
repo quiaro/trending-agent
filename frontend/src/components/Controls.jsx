@@ -15,13 +15,14 @@ function Controls({ categories, onSubmit, loading }) {
 
   return (
     <div className="controls">
-      <h1>What is trending?</h1>
+      <h2>What is trending?</h2>
       <div className="control-row">
         <span className="label">Pick a category:</span>
         <select
           value={selectedCategory}
           onChange={handleCategoryChange}
           disabled={loading}
+          className="category-select"
         >
           <option value="" disabled>
             Select category
@@ -32,11 +33,15 @@ function Controls({ categories, onSubmit, loading }) {
             </option>
           ))}
         </select>
-        <button onClick={handleSubmit} disabled={!selectedCategory || loading}>
+        <button
+          onClick={handleSubmit}
+          disabled={!selectedCategory || loading}
+          className="submit-button"
+        >
           {loading ? (
             <>
               <span className="loading"></span>
-              Loading...
+              Processing...
             </>
           ) : (
             'Show me trending information'
