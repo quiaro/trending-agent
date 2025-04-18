@@ -1,3 +1,7 @@
+from dotenv import load_dotenv, find_dotenv
+import os
+import sys
+
 def setup():
     """
     Set up the environment for the application.
