@@ -60,14 +60,12 @@ def should_continue(state: AgentState) -> str:
     Returns:
         Next node to route to
     """
-    messages = state["messages"]
-    last_message = messages[-1]
+    last_message = state["messages"][-1]
     
     # Check if the last message is a tool call
     if (
         isinstance(last_message, AIMessage) and 
-        hasattr(last_message, "tool_calls") and 
-        last_message.tool_calls
+        hasattr(last_message, "tool_calls")
     ):
         return "tool_selector"
     
@@ -94,18 +92,10 @@ def build_graph() -> StateGraph:
     # Add edges
     workflow.add_conditional_edges(
         "agent",
-        should_continue,
-        {
-            "tool_selector": "tool_selector",
-            END: END
-        }
+        should_continue
     )
     workflow.add_edge("tool_selector", "agent")
     
-    # Set the entry point
     workflow.set_entry_point("agent")
     
-    return workflow
-
-# Create the graph instance
-graph = build_graph().compile() 
+    return workflow.compile()
