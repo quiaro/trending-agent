@@ -9,6 +9,10 @@ import asyncio
 from contextlib import asynccontextmanager
 from langchain_core.messages import HumanMessage, AIMessage
 from app.graph import graph, AgentState
+from app.utils.setup import setup
+
+# Call setup to initialize environment
+setup()
 
 app = FastAPI(title="Trending Information API")
 

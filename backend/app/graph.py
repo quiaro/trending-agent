@@ -7,30 +7,15 @@ import sys
 from openai import OpenAI
 from dotenv import load_dotenv, find_dotenv
 from langgraph.graph import StateGraph, END
+from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, FunctionMessage
+from langchain_core.tools import BaseTool
 from app.tools import google_trends, google_search, reddit_search
 
 # Define the state schema
 class AgentState(TypedDict):
-    """State for the agent."""
-    messages: List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]]
-
-# Load environment variables
-dotenv_path = find_dotenv(usecwd=True)
-if not dotenv_path:
-    print("Error: .env file not found in the current directory or parent directories.")
-    sys.exit(1)
-
-load_dotenv(dotenv_path)
-
-# Create the OpenAI client with API key from environment variables
-api_key = os.getenv("OPENAI_API_KEY")
-if not api_key:
-    print("Error: OPENAI_API_KEY environment variable not set.")
-    sys.exit(1)
-
-client = OpenAI(api_key=api_key)
+    messages: Annotated[List[Union[HumanMessage, AIMessage, SystemMessage, FunctionMessage]], add_messages]
 
 # Define the available tools
 tools = [google_trends, google_search, reddit_search]
@@ -38,8 +23,8 @@ tools = [google_trends, google_search, reddit_search]
 # Define the system message
 system_message = SystemMessage(
     content="""You are a helpful assistant that provides trending information.
-    You have access to tools that can help you find trending topics and 
-    relevant information. Use these tools to provide comprehensive answers."""
+    You have access to tools that can help you find trending information on a
+    specific topic. Use these tools to provide comprehensive answers."""
 )
 
 # Define the agent node
@@ -78,8 +63,8 @@ def agent(state: AgentState) -> Dict:
         tools=[{
             "type": "function",
             "function": {
-                "name": tool.__name__,
-                "description": tool.__doc__,
+                "name": tool.name if isinstance(tool, BaseTool) else tool.__name__,
+                "description": tool.description if isinstance(tool, BaseTool) else tool.__doc__,
                 "parameters": {
                     "type": "object",
                     "properties": {
@@ -171,8 +156,13 @@ def tool_selector(state: AgentState) -> Dict:
         # Execute the specified tool
         result = None
         for tool in tools:
-            if tool.__name__ == function_name:
-                result = tool(**arguments)
+            tool_name = tool.name if isinstance(tool, BaseTool) else tool.__name__
+            if tool_name == function_name:
+                # Use tool.invoke() instead of tool(**arguments) for BaseTool instances
+                if isinstance(tool, BaseTool):
+                    result = tool.invoke(arguments)
+                else:
+                    result = tool(**arguments)
                 break
         
         if result:
