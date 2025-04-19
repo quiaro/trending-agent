@@ -51,7 +51,7 @@ async def stream_agent_response(category: str):
         Chunks of the agent's response
     """
     # Create the initial prompt
-    prompt = f"Find the top trending topic in the United States related to {category.lower()}."
+    prompt = f"Find the top trending topic in the United States related to {category.lower()} and get the most relevant information related to this topic from Google and Reddit."
     
     # Initialize state
     state = create_agent_state(messages=[HumanMessage(content=prompt)])
@@ -60,8 +60,12 @@ async def stream_agent_response(category: str):
     try:
         async for chunk in graph.astream(state, stream_mode="updates"):
             for node, values in chunk.items():
-                yield values["messages"][-1].content
-                yield "\n\n"
+                # Only yield messages from the agent
+                if node == "agent":
+                    last_message = values["messages"][-1].text()
+                    if last_message != "":
+                        yield last_message
+                        yield "\n\n"
 
     except Exception as e:
         # Log the error but don't raise it to avoid breaking the stream
