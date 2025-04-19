@@ -12,7 +12,10 @@ function Content({ data, loading }) {
         </div>
       ) : data ? (
         <div>
-          <div className="content-data">{data}</div>
+          <div
+            className="content-data"
+            dangerouslySetInnerHTML={{ __html: data }}
+          />
         </div>
       ) : (
         <div className="content-message">

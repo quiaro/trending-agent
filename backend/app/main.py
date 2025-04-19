@@ -10,7 +10,7 @@ from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import asyncio
-from contextlib import asynccontextmanager
+import markdown
 from langchain_core.messages import HumanMessage, AIMessage
 from app.graph import build_graph, create_agent_state
 
@@ -48,7 +48,7 @@ async def stream_agent_response(category: str):
         category: The trending category to query
         
     Yields:
-        Chunks of the agent's response
+        Chunks of the agent's response as HTML
     """
     # Create the initial prompt
     prompt = f"Find the top trending topic in Google Trends in the United States related to {category.lower()} in the past 24 hours. Then, get the most relevant information related to this topic from Google and Reddit."
@@ -64,8 +64,9 @@ async def stream_agent_response(category: str):
                 if node == "agent":
                     last_message = values["messages"][-1].text()
                     if last_message != "":
-                        yield last_message
-                        yield "\n\n"
+                        # Convert markdown to HTML
+                        html_content = markdown.markdown(last_message)
+                        yield html_content
 
     except Exception as e:
         # Log the error but don't raise it to avoid breaking the stream
@@ -84,7 +85,7 @@ async def get_trending(
         category: The category to get trending information for
         
     Returns:
-        A streaming response with trending information
+        A streaming response with trending information as HTML
     """
     # Validate category
     if category not in VALID_CATEGORIES:
@@ -101,7 +102,6 @@ async def get_trending(
             "X-Accel-Buffering": "no",  # Disable buffering for Nginx
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
-            "Content-Type": "text/event-stream"
         }
     )
 
