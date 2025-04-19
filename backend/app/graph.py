@@ -10,8 +10,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Func
 from langchain_core.tools import BaseTool
 from langchain_community.tools.google_trends.tool import GoogleTrendsQueryRun
 from langchain_community.utilities.google_trends import GoogleTrendsAPIWrapper
-from langchain_google_community.search import GoogleSearchRun
-from langchain_google_community.search import GoogleSearchAPIWrapper
+from langchain_google_community.search import GoogleSearchRun, GoogleSearchAPIWrapper
 from langchain_community.tools.reddit_search.tool import RedditSearchRun
 from langchain_community.utilities.reddit_search import RedditSearchAPIWrapper
 
