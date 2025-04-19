@@ -51,23 +51,23 @@ async def stream_agent_response(category: str):
         Chunks of the agent's response
     """
     # Create the initial prompt
-    prompt = f"Find the top trending topic in the United States related to {category} and get the most relevant information related to this topic in Google and Reddit."
+    prompt = f"Find the top trending topic in the United States related to {category.lower()}."
     
     # Initialize state
     state = create_agent_state(messages=[HumanMessage(content=prompt)])
     
     # Process through the graph
-    async for event in graph.astream(state):
-        # Extract the new message
-        if "messages" in event:
-            if len(event["messages"]) > len(state["messages"]):
-                new_message = event["messages"][-1]
-                state = event  # Update state
-                
-                # If it's an assistant message with content, yield the content
-                if isinstance(new_message, AIMessage) and hasattr(new_message, "content") and new_message.content:
-                    yield f"data: {new_message.content}\n\n"
-                    await asyncio.sleep(0.1)  # Small delay for smooth streaming
+    try:
+        async for chunk in graph.astream(state, stream_mode="updates"):
+            for node, values in chunk.items():
+                yield values["messages"][-1].content
+                yield "\n\n"
+
+    except Exception as e:
+        # Log the error but don't raise it to avoid breaking the stream
+        print(f"Error in streaming response: {str(e)}")
+        yield f"\n\nError during response generation: {str(e)}"
+
 
 @app.get("/api/trending/{category}")
 async def get_trending(
@@ -92,7 +92,13 @@ async def get_trending(
     # Return streaming response
     return StreamingResponse(
         stream_agent_response(category),
-        media_type="text/event-stream"
+        media_type="text/event-stream",
+        headers={
+            "X-Accel-Buffering": "no",  # Disable buffering for Nginx
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "text/event-stream"
+        }
     )
 
 @app.get("/api/categories")
