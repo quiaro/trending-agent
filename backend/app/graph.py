@@ -21,9 +21,9 @@ tools = [google_trends, google_search, reddit_search]
 
 # Define the system message
 system_message = SystemMessage(
-    content="""You are a helpful assistant that provides trending information.
-    You have access to tools to provide trending information on a
-    specific topic. Use only these tools to provide comprehensive answers."""
+    content="""You are a helpful assistant that provides trending information on a specific topic.
+    You have access to tools to provide this information. Use only the tools provided to return
+    concise answers."""
 )
 
 
