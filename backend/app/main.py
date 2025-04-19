@@ -51,7 +51,7 @@ async def stream_agent_response(category: str):
         Chunks of the agent's response
     """
     # Create the initial prompt
-    prompt = f"Find the top trending topic in the United States related to {category.lower()} in the past 24 hours and get the most relevant information related to this topic from Google and Reddit."
+    prompt = f"Find the top trending topic in Google Trends in the United States related to {category.lower()} in the past 24 hours. Then, get the most relevant information related to this topic from Google and Reddit."
     
     # Initialize state
     state = create_agent_state(messages=[HumanMessage(content=prompt)])
