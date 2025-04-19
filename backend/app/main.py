@@ -13,6 +13,7 @@ import asyncio
 import markdown
 from langchain_core.messages import HumanMessage, AIMessage
 from app.graph import build_graph, create_agent_state
+from datetime import datetime
 
 graph = build_graph()
 app = FastAPI(title="Trending Information API")
@@ -51,7 +52,7 @@ async def stream_agent_response(category: str):
         Chunks of the agent's response as HTML
     """
     # Create the initial prompt
-    prompt = f"Find the top trending topic in Google Trends in the United States related to {category.lower()} in the past 24 hours. Then, get the most relevant information related to this topic from Google and Reddit."
+    prompt = f"Find the top trending topic in Google Trends in the United States related to {category.lower()} in the past 24 hours. Then, get the most relevant information related to this topic from Google and Reddit. The information provided must be up to date. Today is {datetime.now().strftime('%B')} {datetime.now().day}, {datetime.now().year}. "
     
     # Initialize state
     state = create_agent_state(messages=[HumanMessage(content=prompt)])
