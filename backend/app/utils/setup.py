@@ -41,8 +41,26 @@ def setup():
         print("Error: GOOGLE_CSE_ID environment variable not set.")
         sys.exit(1)
 
+    reddit_client_id = os.getenv("REDDIT_CLIENT_ID")
+    if not reddit_client_id:
+        print("Error: REDDIT_CLIENT_ID environment variable not set.")
+        sys.exit(1)
+
+    reddit_client_secret = os.getenv("REDDIT_CLIENT_SECRET")
+    if not reddit_client_secret:  
+        print("Error: REDDIT_CLIENT_SECRET environment variable not set.")
+        sys.exit(1)
+
+    reddit_user_agent = os.getenv("REDDIT_USER_AGENT")
+    if not reddit_user_agent:
+        print("Error: REDDIT_USER_AGENT environment variable not set.")
+        sys.exit(1) 
+
     os.environ["OPENAI_API_KEY"] = openai_api_key
     os.environ["SERPAPI_API_KEY"] = serp_api_key
     os.environ["GOOGLE_API_KEY"] = google_api_key
     os.environ["GOOGLE_CSE_ID"] = google_cse_id
+    os.environ["REDDIT_CLIENT_ID"] = reddit_client_id
+    os.environ["REDDIT_CLIENT_SECRET"] = reddit_client_secret
+    os.environ["REDDIT_USER_AGENT"] = reddit_user_agent
 
