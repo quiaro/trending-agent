@@ -10,8 +10,8 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Func
 from langchain_core.tools import BaseTool
 from langchain_community.tools.google_trends.tool import GoogleTrendsQueryRun
 from langchain_community.utilities.google_trends import GoogleTrendsAPIWrapper
-from langchain_community.tools.google_search.tool import GoogleSearchResults
-from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
+from langchain_google_community.search import GoogleSearchRun
+from langchain_google_community.search import GoogleSearchAPIWrapper
 from langchain_community.tools.reddit_search.tool import RedditSearchRun
 from langchain_community.utilities.reddit_search import RedditSearchAPIWrapper
 
@@ -21,8 +21,8 @@ model = None
 # Define the available tools
 google_trends_wrapper = GoogleTrendsAPIWrapper()
 google_trends = GoogleTrendsQueryRun(api_wrapper=google_trends_wrapper)
-google_search_wrapper = GoogleSearchAPIWrapper()
-google_search = GoogleSearchResults(num_results=3, api_wrapper=google_search_wrapper)
+google_search_wrapper = GoogleSearchAPIWrapper(k=5)
+google_search = GoogleSearchRun(api_wrapper=google_search_wrapper)
 reddit_search_wrapper = RedditSearchAPIWrapper(limit=5, sort="hot", time_filter="day", subreddit="all")
 reddit_search = RedditSearchRun(api_wrapper=reddit_search_wrapper)
 tools = [google_trends, google_search, reddit_search]
