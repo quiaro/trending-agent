@@ -18,8 +18,8 @@ tools = [google_trends, google_search, reddit_search]
 # Define the system message
 system_message = SystemMessage(
     content="""You are a helpful assistant that provides trending information.
-    You have access to tools that can help you find trending information on a
-    specific topic. Use these tools to provide comprehensive answers."""
+    You have access to tools to provide trending information on a
+    specific topic. Use only these tools to provide comprehensive answers."""
 )
 
 
@@ -68,16 +68,13 @@ def should_continue(state: AgentState) -> str:
     last_message = state["messages"][-1]
     
     # Check if the last message is a tool call
-    if (
-        isinstance(last_message, AIMessage) and 
-        hasattr(last_message, "tool_calls")
-    ):
+    if last_message.tool_calls:
         return "tool_selector"
     
     return END
 
 # Create the tool selector node
-tool_selector = ToolNode(tools=[google_trends, google_search, reddit_search])
+tool_selector = ToolNode(tools=tools)
 
 # Build the graph
 def build_graph() -> StateGraph:
@@ -89,6 +86,7 @@ def build_graph() -> StateGraph:
     """
     global model
     model = ChatOpenAI(model="gpt-4o", temperature=0)
+    model = model.bind_tools(tools)
 
     # Create the workflow graph
     workflow = StateGraph(AgentState)
