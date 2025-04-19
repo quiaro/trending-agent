@@ -21,9 +21,15 @@ def setup():
 
     load_dotenv(dotenv_path)
 
-    api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key:
+    openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
         print("Error: OPENAI_API_KEY environment variable not set.")
         sys.exit(1)
 
-    os.environ["OPENAI_API_KEY"] = api_key
+    serp_api_key = os.getenv("SERPAPI_API_KEY")
+    if not serp_api_key:
+        print("Error: SERPAPI_API_KEY environment variable not set.")
+        sys.exit(1)
+
+    os.environ["OPENAI_API_KEY"] = openai_api_key
+    os.environ["SERPAPI_API_KEY"] = serp_api_key

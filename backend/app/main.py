@@ -1,6 +1,10 @@
 """FastAPI server for trending information retrieval."""
 import os
-import sys
+from app.utils.setup import setup
+
+# Call setup to initialize environment
+setup()
+
 from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Path
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,10 +13,6 @@ import asyncio
 from contextlib import asynccontextmanager
 from langchain_core.messages import HumanMessage, AIMessage
 from app.graph import build_graph, create_agent_state
-from app.utils.setup import setup
-
-# Call setup to initialize environment
-setup()
 
 graph = build_graph()
 app = FastAPI(title="Trending Information API")
@@ -51,7 +51,7 @@ async def stream_agent_response(category: str):
         Chunks of the agent's response
     """
     # Create the initial prompt
-    prompt = f"Find the top trending topic in the United States related to {category.lower()} and get the most relevant information related to this topic from Google and Reddit."
+    prompt = f"Find the top trending topic in the United States related to {category.lower()} in the past 24 hours and get the most relevant information related to this topic from Google and Reddit."
     
     # Initialize state
     state = create_agent_state(messages=[HumanMessage(content=prompt)])
