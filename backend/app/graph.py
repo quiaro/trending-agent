@@ -30,7 +30,7 @@ tools = [google_trends, google_search, reddit_search]
 system_message = SystemMessage(
     content="""You are a helpful assistant that provides trending information on a specific topic.
     You have access to tools to provide this information. Use only the tools provided to return
-    concise answers."""
+    concise answers. Do not ask for feedback or offer to help with anything else."""
 )
 
 
