@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Controls from './Controls';
 import Content from './Content';
 import Header from './Header';
@@ -6,6 +6,7 @@ import Header from './Header';
 function App() {
   const [trendingData, setTrendingData] = useState('');
   const [loading, setLoading] = useState(false);
+  const abortControllerRef = useRef(null);
 
   const categories = [
     'Business and Finance',
@@ -20,13 +21,41 @@ function App() {
     'Technology',
   ];
 
+  // Cleanup function for in-progress requests
+  useEffect(() => {
+    return () => {
+      // Abort any in-progress fetch when component unmounts
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   const fetchTrendingData = async (category) => {
     setLoading(true);
     setTrendingData('');
 
+    // Abort any previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create an AbortController to handle cleanup
+    const controller = new AbortController();
+    const signal = controller.signal;
+    abortControllerRef.current = controller;
+
     try {
       const response = await fetch(
-        `/api/trending/${encodeURIComponent(category)}`
+        `/api/trending/${encodeURIComponent(category)}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'text/event-stream',
+          },
+          signal, // Add the abort signal
+        }
       );
 
       if (!response.ok) {
@@ -35,25 +64,26 @@ function App() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let done, value;
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
+      while (!done) {
+        ({ value, done } = await reader.read());
+        if (signal.aborted || done) break;
 
-        const text = decoder.decode(value);
-        const eventData = text
-          .split('\n\n')
-          .filter((chunk) => chunk.trim().startsWith('data: '))
-          .map((chunk) => chunk.replace('data: ', ''))
-          .join('');
-
-        setTrendingData((prev) => prev + eventData);
+        const text = decoder.decode(value, { stream: true });
+        setTrendingData((prev) => prev + text);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
       setTrendingData('Error fetching trending data. Please try again.');
     } finally {
-      setLoading(false);
+      if (!signal.aborted) {
+        setLoading(false);
+        // Clear the abortControllerRef if this request is complete and not aborted
+        if (abortControllerRef.current === controller) {
+          abortControllerRef.current = null;
+        }
+      }
     }
   };
 
