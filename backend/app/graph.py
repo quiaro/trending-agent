@@ -8,15 +8,19 @@ from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, FunctionMessage
 from langchain_core.tools import BaseTool
-from app.tools import google_search, reddit_search
+from app.tools import reddit_search
 from langchain_community.tools.google_trends.tool import GoogleTrendsQueryRun
 from langchain_community.utilities.google_trends import GoogleTrendsAPIWrapper
+from langchain_community.tools.google_search.tool import GoogleSearchResults
+from langchain_community.utilities.google_search import GoogleSearchAPIWrapper
 
 model = None
 
 # Define the available tools
 google_trends_wrapper = GoogleTrendsAPIWrapper()
 google_trends = GoogleTrendsQueryRun(api_wrapper=google_trends_wrapper)
+google_search_wrapper = GoogleSearchAPIWrapper()
+google_search = GoogleSearchResults(num_results=3, api_wrapper=google_search_wrapper)
 tools = [google_trends, google_search, reddit_search]
 
 # Define the system message

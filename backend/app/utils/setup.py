@@ -31,5 +31,18 @@ def setup():
         print("Error: SERPAPI_API_KEY environment variable not set.")
         sys.exit(1)
 
+    google_api_key = os.getenv("GOOGLE_API_KEY")
+    if not google_api_key:
+        print("Error: GOOGLE_API_KEY environment variable not set.")
+        sys.exit(1)
+
+    google_cse_id = os.getenv("GOOGLE_CSE_ID")
+    if not google_cse_id:
+        print("Error: GOOGLE_CSE_ID environment variable not set.")
+        sys.exit(1)
+
     os.environ["OPENAI_API_KEY"] = openai_api_key
     os.environ["SERPAPI_API_KEY"] = serp_api_key
+    os.environ["GOOGLE_API_KEY"] = google_api_key
+    os.environ["GOOGLE_CSE_ID"] = google_cse_id
+
