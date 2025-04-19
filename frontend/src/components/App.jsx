@@ -8,18 +8,24 @@ function App() {
   const [loading, setLoading] = useState(false);
   const abortControllerRef = useRef(null);
 
-  const categories = [
-    'Business and Finance',
-    'Entertainment',
-    'Food and Drink',
-    'Games',
-    'Health',
-    'Hobbies and Leisure',
-    'Jobs and Education',
-    'Science',
-    'Sports',
-    'Technology',
-  ];
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/api/categories');
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        setCategories(data.categories);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Cleanup function for in-progress requests
   useEffect(() => {
@@ -90,12 +96,16 @@ function App() {
   return (
     <div className="container">
       <Header />
-      <Controls
-        categories={categories}
-        onSubmit={fetchTrendingData}
-        loading={loading}
-      />
-      <Content data={trendingData} loading={loading} />
+      {categories.length > 0 && (
+        <>
+          <Controls
+            categories={categories}
+            onSubmit={fetchTrendingData}
+            loading={loading}
+          />
+          <Content data={trendingData} loading={loading} />
+        </>
+      )}
     </div>
   );
 }
