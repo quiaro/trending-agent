@@ -30,6 +30,13 @@ This application lets users fetch the latest trending information on various cat
 
 ## Setup and Installation
 
+### Prerequisites
+
+- Python 3.13+
+- Node.js 22+
+- npm
+- Docker (optional, for containerized deployment)
+
 ### Backend
 
 1. Navigate to the backend directory:
@@ -62,11 +69,7 @@ This application lets users fetch the latest trending information on various cat
    cp .env.example .env
    ```
 
-6. Edit the `.env` file to add your OpenAI API key:
-
-   ```
-   OPENAI_API_KEY=your-api-key
-   ```
+6. Edit the `.env` file to add the different API keys:
 
 7. Start the server:
    ```

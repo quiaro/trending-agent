@@ -16,5 +16,12 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     };
+  } else {
+    return {
+      plugins: [react()],
+      build: {
+        outDir: './build',
+      },
+    };
   }
 });
