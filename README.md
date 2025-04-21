@@ -1,3 +1,16 @@
+---
+title: Trending Information App - Agent Demo
+emoji: 🤖
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+python_version: 3.13
+app_port: 7860
+app_file: app.main.py
+pinned: false
+short_description: Fetch latest trending information on various categories
+---
+
 # Trending Information App
 
 This application lets users fetch the latest trending information on various categories. It consists of a FastAPI backend that uses LangGraph to process queries and a React frontend.
